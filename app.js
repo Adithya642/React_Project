@@ -1,57 +1,46 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom/client";
 
-  const AppLayoutComp=()=>{
+const BASE_URL = 'https://jsonplaceholder.typicode.com';
+
+function Demo() {
+    const [posts, setPosts] = useState([]);
+    const[loading,setLoading]=useState(false);
+    const[page,setPage]=useState(0);
+    const abortControllerRef=useRef<AbortControllernull>(null);
+    useEffect(() => {
+        const fetchPosts = async () => {
+            abortControllerRef.current?.abort();
+            abortControllerRef.current=new AbortController();
+            try {
+                setLoading(true);
+                const response = await fetch(`${BASE_URL}/posts?page=${page}`,{
+                    signal:abortControllerRef.current?.signal,
+                }); // Fix: Use backticks (`) here
+               // console.log(response);
+                const posts = await response.json();
+              //  console.log(posts);
+                setPosts(posts);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            }
+        };
+        fetchPosts();
+    }, []);
+
     return (
-        <div className="app"  >
-            <Header/>
-            <Body/>
+        <div className="tutorial">
+            <h1 className='mb-4 text-2xl'> Data Fetching in React </h1>
+            <ul>
+                {posts.map((post) => {
+                    return <li key={post.id}>{post.title}</li>;
+                })}
+            </ul>
         </div>
-    )
-  }
+    );
+}
 
-  const Header=()=>{
-    return(
-        <div className="header">
-            <div className="logo-container">
-                <img className="logo" src="https://i.pinimg.com/originals/d2/82/c8/d282c8b0f4af7e8354081882ea4ae191.png"/>
-            </div>
-            <div className="nav-items">
-                <ul>
-                    <li>Home</li>
-                    <li>Cart</li>
-                    <li>Track</li>
-                    <li>Orders</li>
-                </ul>
-            </div>
-        </div>
-    )
-  }
-
-  
-
-    const RestaurantCard=()=>{
-        return(
-            <div className="RestoContainer" style={{
-                backgroundColor:"#f0f0f0"
-              }}>
-                <img alt="Our Items" className="foodImg" style={{width:"100px"}} src="https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?cs=srgb&dl=pexels-marvin-ozz-1297854-2474661.jpg&fm=jpg"/>
-                <h3> Bloom Bawarchi</h3>
-                <h4> Biryani, NorthIndian, Chinese</h4>
-                <h4>4.5 stars</h4>
-                <h4>30min</h4> 
-            </div>
-        )
-    }
-
-    const Body=()=>{
-        return (
-    <div className="Body">
-    <div className="Search">Search</div>
-    <div className="restoCard">
-    <RestaurantCard/>
-    </div>
-    </div>
-        )}
- const initial=ReactDOM.createRoot(document.getElementById("root"));
- initial.render(<AppLayoutComp/>);
+export default Demo;
+const initial=ReactDOM.createRoot(document.getElementById("root"));
+initial.render(<Demo/>);
