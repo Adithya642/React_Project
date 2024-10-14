@@ -1,0 +1,8 @@
+/node_modules
+/src/dist
+/.parcel-cache
+/src/.parcel-cache
+.parcel-cache
+**/.parcel-cache
+src/.parcel-cache
+SearchBar_React/src/.parcel-cache
